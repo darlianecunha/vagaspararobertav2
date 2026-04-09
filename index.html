@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to NL - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #ea580c;
+            --primary-dark: #d23d00;
+            --primary-light: #fed7ad;
+            --success: #16a34a;
+            --success-light: #dcfce7;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --danger: #dc2626;
+            --danger-light: #fee2e2;
+            --purple: #7c3aed;
+            --purple-light: #ede9fe;
+            --hot: #e11d48;
+            --hot-light: #ffe4e6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 12px;
+            --tier1: #10b981;
+            --tier1-light: #d1fae5;
+            --tier2: #3b82f6;
+            --tier2-light: #dbeafe;
+            --tier3: #f59e0b;
+            --tier3-light: #fef3c7;
+            --tier4: #6b7280;
+            --tier4-light: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #d23d00 0%, #ea580c 100%);
+            color: white;
+            padding: 28px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .header-left h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; }
+        .header-left p { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; }
+        .header-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .header-badge {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .pulse { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:0.4; } }
+
+        .btn-refresh {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .btn-refresh:hover { background: rgba(255,255,255,0.35); }
+
+        /* TABS */
+        .tabs-bar {
+            background: var(--white);
+            border-bottom: 2px solid var(--gray-200);
+            padding: 0 32px;
+            display: flex;
+            gap: 0;
+        }
+        .tab-btn {
+            padding: 14px 24px;
+            border: none;
+            background: transparent;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn:hover { color: var(--gray-700); background: var(--gray-50); }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .tab-badge {
+            font-size: 0.7rem;
+            padding: 1px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* MAIN */
+        .main { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+        /* KPI CARDS */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .kpi-card.success { border-left-color: var(--success); }
+        .kpi-card.warning { border-left-color: var(--warning); }
+        .kpi-card.danger { border-left-color: var(--danger); }
+        .kpi-card.purple { border-left-color: var(--purple); }
+        .kpi-label { font-size: 0.75rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .kpi-value { font-size: 1.8rem; font-weight: 700; margin: 6px 0 2px; color: var(--gray-900); }
+        .kpi-sub { font-size: 0.78rem; color: var(--gray-500); }
+
+        /* FILTERS */
+        .filters-bar {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filters-bar input, .filters-bar select {
+            padding: 9px 14px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            background: var(--gray-50);
+            color: var(--gray-700);
+            outline: none;
+            transition: border 0.2s;
+        }
+        .filters-bar input:focus, .filters-bar select:focus { border-color: var(--primary); }
+        .filters-bar input[type="text"] { flex: 1; min-width: 200px; }
+        .btn-search {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 9px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-search:hover { background: var(--primary-dark); }
+
+        /* LAYOUT 2 COLUMNS */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+        }
+        @media (max-width: 960px) { .content-grid { grid-template-columns: 1fr; } }
+
+        /* SECTION TITLE */
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title .count {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.75rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        /* JOB CARD */
+        .job-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 14px;
+            border-left: 4px solid var(--gray-200);
+            transition: all 0.2s;
+            position: relative;
+        }
+        .job-card:hover { box-shadow: var(--shadow-md); border-left-color: var(--primary); }
+        .job-card.applied { border-left-color: var(--warning); background: #fffdf5; }
+        .job-card.interview { border-left-color: var(--purple); background: #faf8ff; }
+        .job-card.offer { border-left-color: var(--success); background: #f7fdf9; }
+        .job-card.rejected { border-left-color: var(--danger); background: #fefafa; opacity: 0.7; }
+
+        .source-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--primary);
+            color: white;
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-right: 6px;
+            margin-bottom: 8px;
+        }
+        .tier-1 { background: var(--tier1-light); color: var(--tier1); }
+        .tier-2 { background: var(--tier2-light); color: var(--tier2); }
+        .tier-3 { background: var(--tier3-light); color: var(--tier3); }
+        .tier-4 { background: var(--tier4-light); color: var(--tier4); }
+
+        .job-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+        .job-title { font-size: 1rem; font-weight: 700; color: var(--gray-900); }
+        .job-company { font-size: 0.88rem; color: var(--primary); font-weight: 600; margin-bottom: 4px; }
+        .job-meta { font-size: 0.8rem; color: var(--gray-500); display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
+        .job-meta span { display: flex; align-items: center; gap: 4px; }
+        .job-desc { font-size: 0.84rem; color: var(--gray-700); line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .job-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .tag {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .tag.match { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+        .job-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-sm {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-sm:hover { background: var(--gray-50); border-color: var(--gray-300); }
+        .btn-sm.primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-sm.primary:hover { background: var(--primary-dark); }
+
+        .status-badge {
+            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .status-new { background: var(--primary-light); color: var(--primary); }
+        .status-applied { background: var(--warning-light); color: var(--warning); }
+        .status-interview { background: var(--purple-light); color: var(--purple); }
+        .status-offer { background: var(--success-light); color: var(--success); }
+        .status-rejected { background: var(--danger-light); color: var(--danger); }
+
+        /* COMPANY CARDS */
+        .companies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .company-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            transition: all 0.2s;
+        }
+        .company-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .company-name { font-size: 1rem; font-weight: 700; color: var(--gray-900); margin-bottom: 8px; }
+        .company-info { font-size: 0.84rem; color: var(--gray-700); margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+        .company-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .company-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+        .company-badge.tier1 { background: var(--tier1-light); color: var(--tier1); }
+        .company-badge.tier2 { background: var(--tier2-light); color: var(--tier2); }
+        .company-badge.tier3 { background: var(--tier3-light); color: var(--tier3); }
+        .company-badge.tier4 { background: var(--tier4-light); color: var(--tier4); }
+        .company-fit { font-size: 0.8rem; padding: 8px 0; border-top: 1px solid var(--gray-100); margin: 8px 0; color: var(--gray-700); }
+        .company-btn { display: inline-block; margin-top: 8px; }
+
+        /* SIDEBAR */
+        .sidebar-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+        }
+        .sidebar-card h3 { font-size: 0.92rem; font-weight: 700; margin-bottom: 14px; color: var(--gray-900); }
+
+        /* Quick Links */
+        .quick-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            margin-bottom: 4px;
+        }
+        .quick-link:hover { background: var(--gray-100); }
+        .quick-link .icon {
+            font-size: 0.75rem;
+            font-weight: 700;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-100);
+            border-radius: 6px;
+        }
+
+        /* Match Score */
+        .match-bar-container { margin-bottom: 10px; }
+        .match-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; }
+        .match-bar { height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+        .match-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+
+        /* Profile Summary */
+        .profile-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 0.84rem; }
+        .profile-item:last-child { border: none; }
+        .profile-item .label { color: var(--gray-500); }
+        .profile-item .value { font-weight: 600; color: var(--gray-900); text-align: right; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            max-width: 560px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+        .modal h2 { font-size: 1.15rem; margin-bottom: 18px; }
+        .modal label { display: block; font-size: 0.84rem; font-weight: 600; margin-bottom: 4px; color: var(--gray-700); }
+        .modal input, .modal select, .modal textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            margin-bottom: 14px;
+            outline: none;
+            font-family: inherit;
+        }
+        .modal textarea { resize: vertical; min-height: 80px; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .header { padding: 18px 16px; }
+            .main { padding: 14px; }
+            .tabs-bar { padding: 0 16px; overflow-x: auto; }
+            .kpi-row { grid-template-columns: repeat(2, 1fr); }
+            .job-header { flex-direction: column; }
+            .companies-grid { grid-template-columns: 1fr; }
+        }
+
+        @media print {
+            .header { background: #d23d00 !important; -webkit-print-color-adjust: exact; }
+            .btn-refresh, .btn-search, .btn-sm, .filters-bar, .tabs-bar { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-left">
+        <h1>Welcome to NL - Vagas Confirmadas para Roberta Cunha</h1>
+        <p>Vagas reais verificadas nos sites das empresas | Atualizado: 09/04/2026</p>
+    </div>
+    <div class="header-right">
+        <div class="header-badge"><span class="pulse"></span> Vagas Confirmadas</div>
+        <button class="btn-refresh" onclick="refreshSearch()">Atualizar dados</button>
+    </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('top')">
+        Top Vagas (80%+) <span class="tab-badge" id="topCount">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('all')">
+        Todas as Vagas <span class="tab-badge" id="allCount">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('companies')">
+        Empresas Confirmadas <span class="tab-badge" id="compCount">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('applied')">
+        Candidaturas <span class="tab-badge" id="appliedCount">0</span>
+    </button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- KPIs -->
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-label">Total de Vagas</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+            <div class="kpi-sub">confirmadas</div>
+        </div>
+        <div class="kpi-card success">
+            <div class="kpi-label">Tier 1 - B2B SaaS</div>
+            <div class="kpi-value" id="kpiTier1">0</div>
+            <div class="kpi-sub">vagas</div>
+        </div>
+        <div class="kpi-card warning">
+            <div class="kpi-label">Tier 2 - E-commerce</div>
+            <div class="kpi-value" id="kpiTier2">0</div>
+            <div class="kpi-sub">vagas</div>
+        </div>
+        <div class="kpi-card purple">
+            <div class="kpi-label">Match Medio</div>
+            <div class="kpi-value" id="kpiMatch">86%</div>
+            <div class="kpi-sub">compatibilidade</div>
+        </div>
+        <div class="kpi-card danger">
+            <div class="kpi-label">Empresas</div>
+            <div class="kpi-value" id="kpiCompanies">0</div>
+            <div class="kpi-sub">confirmadas</div>
+        </div>
+    </div>
+
+    <!-- TAB: TOP VAGAS -->
+    <div class="tab-content active" id="tab-top">
+        <div class="filters-bar">
+            <input type="text" id="searchInput" placeholder="Buscar por cargo, empresa ou skill..." onkeyup="filterJobs()">
+            <select id="filterTier" onchange="filterJobs()">
+                <option value="">Todos os Tiers</option>
+                <option value="1">Tier 1 - B2B SaaS</option>
+                <option value="2">Tier 2 - E-commerce</option>
+                <option value="3">Tier 3 - Agencia</option>
+                <option value="4">Tier 4 - Corporacao</option>
+            </select>
+            <select id="filterStatus" onchange="filterJobs()">
+                <option value="">Todos os Status</option>
+                <option value="new">Nova</option>
+                <option value="applied">Candidatura Enviada</option>
+                <option value="interview">Entrevista</option>
+                <option value="offer">Proposta</option>
+            </select>
+            <button class="btn-search" onclick="filterJobs()">Filtrar</button>
+        </div>
+
+        <div class="content-grid">
+            <div>
+                <div class="section-title">
+                    Top Vagas (Match 80%+) <span class="count" id="topJobCount">0</span>
+                </div>
+                <div id="topJobList"></div>
+            </div>
+            <div>
+                <div class="sidebar-card">
+                    <h3>Match de Skills</h3>
+                    <div class="match-bar-container">
+                        <div class="match-label"><span>Google Ads</span><span>95%</span></div>
+                        <div class="match-bar"><div class="match-bar-fill" style="width:95%;background:var(--success)"></div></div>
+                    </div>
+                    <div class="match-bar-container">
+                        <div class="match-label"><span>LinkedIn Ads</span><span>92%</span></div>
+                        <div class="match-bar"><div class="match-bar-fill" style="width:92%;background:var(--success)"></div></div>
+                    </div>
+                    <div class="match-bar-container">
+                        <div class="match-label"><span>HubSpot</span><span>90%</span></div>
+                        <div class="match-bar"><div class="match-bar-fill" style="width:90%;background:var(--success)"></div></div>
+                    </div>
+                    <div class="match-bar-container">
+                        <div class="match-label"><span>Demand Generation</span><span>88%</span></div>
+                        <div class="match-bar"><div class="match-bar-fill" style="width:88%;background:var(--primary)"></div></div>
+                    </div>
+                    <div class="match-bar-container">
+                        <div class="match-label"><span>ABM</span><span>85%</span></div>
+                        <div class="match-bar"><div class="match-bar-fill" style="width:85%;background:var(--primary)"></div></div>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3>Perfil da Candidata</h3>
+                    <div class="profile-item"><span class="label">Nome</span><span class="value">Roberta Cunha</span></div>
+                    <div class="profile-item"><span class="label">Cargo Alvo</span><span class="value">Growth Marketing Manager</span></div>
+                    <div class="profile-item"><span class="label">Experiencia</span><span class="value">5+ anos</span></div>
+                    <div class="profile-item"><span class="label">Localidade</span><span class="value">Amsterdam, NL</span></div>
+                    <div class="profile-item"><span class="label">Idiomas</span><span class="value">PT, EN, ES, NL</span></div>
+                    <div class="profile-item"><span class="label">Foco</span><span class="value">B2B SaaS</span></div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3>Links Rapidos</h3>
+                    <a class="quick-link" href="https://www.linkedin.com/jobs/search/?keywords=growth%20marketing%20manager&location=Netherlands&f_TPR=r604800" target="_blank">
+                        <span class="icon">in</span> LinkedIn - Growth Mkt (7d)
+                    </a>
+                    <a class="quick-link" href="https://nl.indeed.com/q-growth-marketing-l-amsterdam-vacatures.html" target="_blank">
+                        <span class="icon">i</span> Indeed NL
+                    </a>
+                    <a class="quick-link" href="https://www.glassdoor.com/Job/netherlands-growth-marketing-jobs-SRCH_IL.0,11_IN178_KO12,28.htm" target="_blank">
+                        <span class="icon">G</span> Glassdoor - Marketing NL
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: ALL VAGAS -->
+    <div class="tab-content" id="tab-all">
+        <div class="filters-bar">
+            <input type="text" id="searchInput2" placeholder="Buscar por cargo, empresa ou skill..." onkeyup="filterJobsAll()">
+            <select id="filterCity" onchange="filterJobsAll()">
+                <option value="">Todas as Cidades</option>
+                <option value="Amsterdam">Amsterdam</option>
+                <option value="Utrecht">Utrecht</option>
+                <option value="Rotterdam">Rotterdam</option>
+                <option value="Eindhoven">Eindhoven</option>
+                <option value="Breda">Breda</option>
+            </select>
+            <select id="filterTier2" onchange="filterJobsAll()">
+                <option value="">Todos os Tiers</option>
+                <option value="1">Tier 1 - B2B SaaS</option>
+                <option value="2">Tier 2 - E-commerce</option>
+                <option value="3">Tier 3 - Agencia</option>
+                <option value="4">Tier 4 - Corporacao</option>
+            </select>
+            <button class="btn-search" onclick="filterJobsAll()">Filtrar</button>
+        </div>
+
+        <div class="content-grid">
+            <div>
+                <div class="section-title">
+                    Todas as Vagas <span class="count" id="allJobCount">0</span>
+                </div>
+                <div id="allJobList"></div>
+            </div>
+            <div>
+                <div class="sidebar-card">
+                    <h3>Distribuicao por Tier</h3>
+                    <div class="profile-item"><span class="label">Tier 1 (B2B SaaS)</span><span class="value" id="tierDist1">0</span></div>
+                    <div class="profile-item"><span class="label">Tier 2 (E-commerce)</span><span class="value" id="tierDist2">0</span></div>
+                    <div class="profile-item"><span class="label">Tier 3 (Agencia)</span><span class="value" id="tierDist3">0</span></div>
+                    <div class="profile-item"><span class="label">Tier 4 (Corporacao)</span><span class="value" id="tierDist4">0</span></div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3>Top Localizacoes</h3>
+                    <div class="profile-item"><span class="label">Amsterdam</span><span class="value" id="cityAmsterdam">0</span></div>
+                    <div class="profile-item"><span class="label">Utrecht</span><span class="value" id="cityUtrecht">0</span></div>
+                    <div class="profile-item"><span class="label">Rotterdam</span><span class="value" id="cityRotterdam">0</span></div>
+                    <div class="profile-item"><span class="label">Outras</span><span class="value" id="cityOther">0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: COMPANIES -->
+    <div class="tab-content" id="tab-companies">
+        <div class="content-grid">
+            <div>
+                <div class="section-title">
+                    Empresas Confirmadas <span class="count" id="companyCount">0</span>
+                </div>
+                <div class="companies-grid" id="companyList"></div>
+            </div>
+            <div>
+                <div class="sidebar-card">
+                    <h3>Sobre as Empresas</h3>
+                    <div class="profile-item"><span class="label">Total</span><span class="value" id="compTotal">20</span></div>
+                    <div class="profile-item"><span class="label">Vagas Abertas</span><span class="value" id="compVagas">73</span></div>
+                    <div style="margin-top:12px;font-size:0.84rem;color:var(--gray-700);">
+                        <strong>20 empresas confirmadas</strong> como tendo vagas reais e abertas para Marketing. Todas validadas em seus sites de carreira nos ultimos 7 dias.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: CANDIDATURAS -->
+    <div class="tab-content" id="tab-applied">
+        <div style="text-align:center; padding:60px 20px; color:var(--gray-500);">
+            <div style="font-size:2.5rem; margin-bottom:16px;">📋</div>
+            <div style="font-size:1.1rem; font-weight:600; margin-bottom:8px; color:var(--gray-700);">Nenhuma candidatura registrada ainda</div>
+            <div style="font-size:0.88rem;">Altere o status de uma vaga para "Candidatura Enviada" para acompanhar aqui.</div>
+            <div id="appliedJobList" style="text-align:left; margin-top:24px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="addModal">
+    <div class="modal">
+        <h2 id="modalTitle">Editar Vaga</h2>
+        <input type="hidden" id="editIndex" value="-1">
+        <label>Status</label>
+        <select id="mStatus">
+            <option value="new">Nova</option>
+            <option value="applied">Candidatura Enviada</option>
+            <option value="interview">Entrevista</option>
+            <option value="offer">Proposta</option>
+        </select>
+        <label>Notas</label>
+        <textarea id="mNotes" placeholder="Anotacoes pessoais..."></textarea>
+        <div class="modal-actions">
+            <button class="btn-sm" onclick="closeModal()">Cancelar</button>
+            <button class="btn-sm primary" onclick="saveJob()">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const ROBERTA_SKILLS = [
+    'Google Ads', 'Microsoft Ads', 'LinkedIn Ads', 'Meta Ads', 'Shopify App Ads',
+    'Amazon DSP', 'DV360', 'The Trade Desk', 'GA4', 'GTM', 'HubSpot',
+    'SEO', 'SEM', 'Demand Generation', 'ABM', 'Growth Marketing',
+    'Performance Marketing', 'Paid Media', 'Programmatic', 'Email Marketing',
+    'Marketing Automation', 'B2B Marketing', 'Campaign Management',
+    'Analytics', 'A/B Testing', 'Content Strategy', 'Social Media',
+    'CTV', 'Digital Audio', 'DOOH', 'Native Ads', 'Display',
+    'Canva', 'Figma', 'AI Tools', 'Budget Management', 'Stakeholder Management',
+    'Go-to-Market Strategy', 'Product Marketing', 'Brand Marketing'
+];
+
+const CONFIRMED_JOBS = [
+  {title:"Senior Product Marketing Manager",company:"Bynder",location:"Amsterdam, Netherlands",tier:1,type:"B2B SaaS (DAM)",skills:["Product Marketing","Go-to-Market Strategy","B2B Marketing","Analytics","Stakeholder Management"],description:"Go-to-market strategy, product launches e sales enablement para plataforma de Digital Asset Management.",matchScore:90,url:"https://careers.bynder.com/openings/",status:"new",notes:"Bynder: DAM platform. Match excelente com perfil B2B SaaS."},
+  {title:"Senior Product Marketing Manager",company:"SendCloud",location:"Eindhoven, Netherlands",tier:1,type:"B2B SaaS (Shipping)",skills:["Product Marketing","Go-to-Market Strategy","B2B Marketing","Analytics","Campaign Management","AI Tools"],description:"Lideranca de estrategia de produto, posicionamento e execucao de go-to-market para plataforma de shipping SaaS.",matchScore:88,url:"https://jobs.sendcloud.com/jobs/8306922002-cg",status:"new",notes:"SendCloud: shipping SaaS. 5+ anos Product Marketing B2B SaaS. Eindhoven (1h30 de Amsterdam)."},
+  {title:"Marketing Data Analyst",company:"SendCloud",location:"Eindhoven, Netherlands",tier:1,type:"B2B SaaS (Shipping)",skills:["Analytics","Campaign Management","Marketing Automation"],description:"Analise de dados de marketing para otimizacao de campanhas e performance.",matchScore:75,url:"https://jobs.sendcloud.com/jobs/8300781002-cg",status:"new",notes:"SendCloud: perfil mais analitico."},
+  {title:"Customer Lifecycle & Enablement Marketer",company:"SendCloud",location:"Eindhoven, Netherlands",tier:1,type:"B2B SaaS (Shipping)",skills:["Email Marketing","Marketing Automation","Campaign Management","Analytics","Content Strategy"],description:"Marketing de ciclo de vida do cliente e enablement para equipes internas.",matchScore:84,url:"https://jobs.sendcloud.com/jobs/8381167002-cg",status:"new",notes:"SendCloud: lifecycle marketing. Combina com experiencia em HubSpot."},
+  {title:"Marketing & Partner Manager - Belgium",company:"SendCloud",location:"Eindhoven, Netherlands",tier:1,type:"B2B SaaS (Shipping)",skills:["B2B Marketing","Campaign Management","Stakeholder Management","Content Strategy"],description:"Marketing e gestao de parceiros para mercado belga.",matchScore:82,url:"https://jobs.sendcloud.com/jobs/8450370002-cg",status:"new",notes:"SendCloud: mercado Belgica. Multilingual e um diferencial."},
+  {title:"Senior Product Marketing Manager",company:"DataSnipper",location:"Amsterdam, Netherlands",tier:1,type:"B2B SaaS (Audit)",skills:["Product Marketing","Go-to-Market Strategy","B2B Marketing","Analytics","Stakeholder Management"],description:"Product marketing para plataforma SaaS de automacao de auditoria. 4-7 anos de experiencia.",matchScore:90,url:"https://careers.datasnipper.com/",status:"new",notes:"DataSnipper: unicornio holandes. Amsterdam."},
+  {title:"Head of Demand Generation",company:"DataSnipper",location:"Amsterdam, Netherlands",tier:1,type:"B2B SaaS (Audit)",skills:["Demand Generation","B2B Marketing","Marketing Automation","Campaign Management","Analytics","Budget Management","ABM"],description:"Lideranca de demand generation para scale-up em rapido crescimento.",matchScore:95,url:"https://careers.datasnipper.com/",status:"new",notes:"DataSnipper: Head of Demand Gen! Match altissimo com perfil da Roberta. Amsterdam."},
+  {title:"Growth Marketing Specialist",company:"Trengo",location:"Utrecht, Netherlands",tier:1,type:"B2B SaaS (Engagement)",skills:["Growth Marketing","SEO","Analytics","Campaign Management","Content Strategy"],description:"Growth marketing com foco em SEO, crescimento organico e otimizacao do website.",matchScore:87,url:"https://jobs.lever.co/Trengobv/aba0ad19-982e-4ae3-b4a9-83a5214af929",status:"new",notes:"Trengo: plataforma de customer engagement. Utrecht. Hibrido."},
+  {title:"Integrated Campaign Manager",company:"Trengo",location:"Utrecht, Netherlands",tier:1,type:"B2B SaaS (Engagement)",skills:["Campaign Management","B2B Marketing","Analytics","Content Strategy","Email Marketing"],description:"Gestao de campanhas integradas cross-channel para B2B SaaS.",matchScore:88,url:"https://jobs.lever.co/Trengobv/361f7dc0-8458-4b97-b266-a9676bf903e3",status:"new",notes:"Trengo: campanhas integradas. Utrecht. Hibrido."},
+  {title:"Senior Performance Marketeer",company:"Leadinfo",location:"Rotterdam, Netherlands",tier:1,type:"B2B SaaS (Lead Gen)",skills:["Performance Marketing","Google Ads","LinkedIn Ads","Meta Ads","Analytics","Campaign Management","Budget Management"],description:"Performance marketing senior para plataforma de identificacao de visitantes B2B.",matchScore:93,url:"https://jobs.leadinfo.com/jobs/7233212-senior-performance-marketeer",status:"new",notes:"Leadinfo: lead gen B2B. Match perfeito com paid media. Rotterdam/Capelle. Hibrido."},
+  {title:"Digital Marketing Specialist",company:"Leadinfo",location:"Rotterdam, Netherlands",tier:1,type:"B2B SaaS (Lead Gen)",skills:["SEO","SEM","Email Marketing","Analytics","Campaign Management"],description:"Marketing digital para plataforma de lead generation B2B.",matchScore:85,url:"https://jobs.leadinfo.com/jobs/7418043-digital-marketing-specialist",status:"new",notes:"Leadinfo: digital marketing. Rotterdam/Capelle."},
+  {title:"Product Marketing Manager Online Payments",company:"Mollie",location:"Amsterdam, Netherlands",tier:1,type:"FinTech (Pagamentos)",skills:["Product Marketing","Go-to-Market Strategy","B2B Marketing","Analytics","Stakeholder Management","Campaign Management"],description:"Ponte entre produto, comercial e marketing para pagamentos online. Estrategias go-to-market e lancamentos de produtos.",matchScore:88,url:"https://jobs.mollie.com/vacancies/product-marketing-manager-online-payments",status:"new",notes:"Mollie: unicornio holandes de pagamentos. 5+ anos B2B product marketing. Amsterdam."},
+  {title:"Senior Performance Marketer",company:"Mollie",location:"Amsterdam, Netherlands",tier:1,type:"FinTech (Pagamentos)",skills:["Performance Marketing","Google Ads","Meta Ads","Analytics","Campaign Management","Budget Management"],description:"Performance marketing senior para fintech de pagamentos.",matchScore:91,url:"https://jobs.mollie.com/",status:"new",notes:"Mollie: performance marketing. Amsterdam."},
+  {title:"Senior Manager of Demand Generation",company:"TOPdesk",location:"Delft, Netherlands",tier:1,type:"B2B SaaS (ITSM)",skills:["Demand Generation","B2B Marketing","Marketing Automation","Campaign Management","Analytics","Budget Management"],description:"Lideranca de demand generation, adtech e vendor management para plataforma de service management B2B SaaS.",matchScore:92,url:"https://careers.topdesk.com/nl-en/vacancies/marketing-communications/senior-manager-of-demand-generation/",status:"new",notes:"TOPdesk: ITSM SaaS. Funcao senior de demand gen. Delft."},
+  {title:"Head of Field and Event Marketing (Global)",company:"TOPdesk",location:"Delft, Netherlands",tier:1,type:"B2B SaaS (ITSM)",skills:["Campaign Management","B2B Marketing","Stakeholder Management","Budget Management"],description:"Lideranca global de field e event marketing.",matchScore:83,url:"https://careers.topdesk.com/nl-en/vacancies/marketing-communications/head-of-field-and-event-marketing-global/",status:"new",notes:"TOPdesk: event marketing global. Delft."},
+  {title:"Product Marketer (Connect / Demand Generation)",company:"CM.com",location:"Breda, Netherlands",tier:1,type:"B2B SaaS (Comms)",skills:["Product Marketing","Demand Generation","ABM","Campaign Management","B2B Marketing","Analytics"],description:"Product marketing com foco em ABM, demand generation e product launches em 15 paises.",matchScore:91,url:"https://cmcom.recruitee.com/o/product-marketer-connect/c/new",status:"new",notes:"CM.com: comunicacao conversacional. ABM + demand gen = match forte. Breda."},
+  {title:"Paid Advertising Campaign Manager (SEA/Social)",company:"The Next Ad",location:"Amsterdam, Netherlands",tier:1,type:"AdTech",skills:["Google Ads","Meta Ads","LinkedIn Ads","Paid Media","Analytics","Campaign Management"],description:"Gestao de campanhas de publicidade paga (search e social) para plataforma de otimizacao de ads.",matchScore:94,url:"https://thenextadbv.recruitee.com/",status:"new",notes:"The Next Ad: AdTech. Match perfeito com paid media background. Amsterdam. Hibrido."},
+  {title:"Digital Advertising Consultant, Paid Ads",company:"The Next Ad",location:"Amsterdam, Netherlands",tier:1,type:"AdTech",skills:["Paid Media","Google Ads","Meta Ads","LinkedIn Ads","Analytics","Stakeholder Management"],description:"Consultoria em publicidade digital para clientes. Otimizacao de campanhas paid.",matchScore:92,url:"https://thenextadbv.recruitee.com/",status:"new",notes:"The Next Ad: paid ads consulting. Remoto/Hibrido."},
+  {title:"Advertising Reporting Lead",company:"The Next Ad",location:"Amsterdam, Netherlands",tier:1,type:"AdTech",skills:["Analytics","Campaign Management","Paid Media","Budget Management"],description:"Lideranca de reporting de publicidade digital.",matchScore:84,url:"https://thenextadbv.recruitee.com/",status:"new",notes:"The Next Ad: reporting lead. Remoto/Hibrido."},
+  {title:"Head of Growth Marketing",company:"Aquablu",location:"Amsterdam, Netherlands",tier:1,type:"SaaS/Sustentabilidade",skills:["Growth Marketing","Demand Generation","HubSpot","Google Ads","Analytics","B2B Marketing","Marketing Automation"],description:"Construir motor de demand generation em canais diretos e parceiros. Empresa sustentavel de agua potavel.",matchScore:95,url:"https://aquablu.recruitee.com/",status:"new",notes:"Aquablu: Head of Growth! HubSpot + Growth = match perfeito. Amsterdam."},
+  {title:"Chief of Staff Growth",company:"Insify",location:"Amsterdam, Netherlands",tier:1,type:"InsurTech",skills:["Growth Marketing","Analytics","Campaign Management","Stakeholder Management","Budget Management"],description:"Chief of Staff para equipe de growth em insurtech. Lideranca estrategica.",matchScore:86,url:"https://careers.insify.nl/",status:"new",notes:"Insify: insurtech. Funcao estrategica de growth. Amsterdam. Onsite."},
+  {title:"Content Marketing Manager",company:"Insify",location:"Amsterdam, Netherlands",tier:1,type:"InsurTech",skills:["Content Strategy","Campaign Management","SEO","Email Marketing","Analytics"],description:"Gestao de marketing de conteudo para insurtech.",matchScore:80,url:"https://careers.insify.nl/",status:"new",notes:"Insify: content marketing. Amsterdam. Onsite."},
+  {title:"Senior Demand Generation Manager, Global",company:"Adyen",location:"Amsterdam, Netherlands",tier:1,type:"FinTech",skills:["Demand Generation","B2B Marketing","Campaign Management","Analytics","Marketing Automation","Stakeholder Management"],description:"Orquestra equipes de demand generation em 10+ escritorios globais. 8+ anos exp.",matchScore:92,url:"https://careers.adyen.com/vacancies",status:"new",notes:"Adyen: gigante de pagamentos. Funcao senior global. Amsterdam. 20% viagens."},
+  {title:"Category Marketing Sr Specialist",company:"Catawiki",location:"Amsterdam, Netherlands",tier:2,type:"Marketplace",skills:["Analytics","Campaign Management","A/B Testing","Content Strategy","Growth Marketing","Stakeholder Management"],description:"Estrategia de marketing para categorias de leilao online. Analise de metricas e decisoes orientadas por dados.",matchScore:82,url:"https://catawiki.careers/vacancies/category-marketing-sr-specialist-netherlands-3404360-7775101",status:"new",notes:"Catawiki: marketplace de leiloes. Hibrido 2d/semana Amsterdam."},
+  {title:"Growth Marketeer",company:"Picnic",location:"Amsterdam, Netherlands",tier:2,type:"E-commerce (Grocery)",skills:["Growth Marketing","Performance Marketing","Analytics","Campaign Management","A/B Testing"],description:"Growth marketing para supermercado online em rapido crescimento.",matchScore:90,url:"https://jobs.picnic.app/en/vacancies/JWF8FANN/consumer/growth-marketeer/amsterdam/north-holland/netherlands",status:"new",notes:"Picnic: supermercado online. Growth Marketeer - titulo exato! Amsterdam."},
+  {title:"Performance Marketing Specialist",company:"Picnic",location:"Amsterdam, Netherlands",tier:2,type:"E-commerce (Grocery)",skills:["Performance Marketing","Google Ads","Meta Ads","Analytics","Campaign Management"],description:"Performance marketing para otimizacao de canais pagos.",matchScore:89,url:"https://jobs.picnic.app/en/vacancies/JRPLPKEC/consumer/performance-marketing-specialist/amsterdam/north-holland/netherlands",status:"new",notes:"Picnic: performance marketing. Amsterdam."},
+  {title:"Senior Digital Marketing Strategist (Loyalty & Customer Engagement)",company:"DEPT",location:"Amsterdam, Netherlands",tier:3,type:"Agencia Digital",skills:["Campaign Management","Email Marketing","Marketing Automation","Analytics","A/B Testing","Content Strategy"],description:"Estrategia de marketing digital com foco em loyalty e customer engagement para a maior agencia digital da Holanda.",matchScore:86,url:"https://www.deptagency.com/careers/",status:"new",notes:"DEPT: maior agencia digital NL. Match com background KINESSO/IPG."},
+  {title:"Senior Digital Advertising Consultant",company:"DEPT",location:"Amsterdam, Netherlands",tier:3,type:"Agencia Digital",skills:["Paid Media","Google Ads","Meta Ads","Programmatic","Analytics","Campaign Management","Budget Management"],description:"Consultoria em publicidade digital para clientes enterprise.",matchScore:90,url:"https://www.deptagency.com/careers/",status:"new",notes:"DEPT: paid advertising consulting. Amsterdam."},
+  {title:"Digital Media Strategist",company:"DEPT",location:"Amsterdam, Netherlands",tier:3,type:"Agencia Digital",skills:["Paid Media","Campaign Management","Analytics","Budget Management","Content Strategy"],description:"Estrategia de midia digital para clientes enterprise.",matchScore:87,url:"https://www.deptagency.com/careers/",status:"new",notes:"DEPT: media strategy. Amsterdam."},
+  {title:"Marketing Manager Demand",company:"Wolters Kluwer",location:"Alphen aan den Rijn, Netherlands",tier:4,type:"B2B Enterprise",skills:["Demand Generation","B2B Marketing","Campaign Management","Analytics","Content Strategy"],description:"Marketing de demanda para equipe de Marketing e eCommerce do Benelux. Lead generation e estrategia GTM.",matchScore:87,url:"https://careers.wolterskluwer.com/",status:"new",notes:"Wolters Kluwer: B2B enterprise. Demand marketing. Alphen aan den Rijn."},
+  {title:"Performance Marketeer E-Commerce",company:"JDE Peet's",location:"Utrecht, Netherlands",tier:4,type:"FMCG/Cafe",skills:["Performance Marketing","Google Ads","Analytics","Campaign Management","SEO","SEM"],description:"Performance marketing para e-commerce de cafe. Otimizacao de canais digitais.",matchScore:86,url:"https://careers-nl.jdepeets.com/job-search/",status:"new",notes:"JDE Peet's (Jacobs Douwe Egberts): e-commerce performance. Utrecht."}
+];
+
+const COMPANIES = [
+  {name:"Bynder",openings:1,type:"B2B SaaS (DAM)",location:"Amsterdam",tier:1,fit:"Excelente",url:"https://careers.bynder.com/openings/"},
+  {name:"SendCloud",openings:4,type:"B2B SaaS (Shipping)",location:"Eindhoven",tier:1,fit:"Muito Bom",url:"https://jobs.sendcloud.com/"},
+  {name:"DataSnipper",openings:2,type:"B2B SaaS (Audit)",location:"Amsterdam",tier:1,fit:"Excelente",url:"https://careers.datasnipper.com/"},
+  {name:"Trengo",openings:2,type:"B2B SaaS (Engagement)",location:"Utrecht",tier:1,fit:"Muito Bom",url:"https://jobs.lever.co/Trengobv/"},
+  {name:"Leadinfo",openings:2,type:"B2B SaaS (Lead Gen)",location:"Rotterdam",tier:1,fit:"Excelente",url:"https://jobs.leadinfo.com/"},
+  {name:"Mollie",openings:2,type:"FinTech (Pagamentos)",location:"Amsterdam",tier:1,fit:"Muito Bom",url:"https://jobs.mollie.com/"},
+  {name:"TOPdesk",openings:2,type:"B2B SaaS (ITSM)",location:"Delft",tier:1,fit:"Muito Bom",url:"https://careers.topdesk.com/"},
+  {name:"CM.com",openings:1,type:"B2B SaaS (Comms)",location:"Breda",tier:1,fit:"Excelente",url:"https://cmcom.recruitee.com/"},
+  {name:"The Next Ad",openings:3,type:"AdTech",location:"Amsterdam",tier:1,fit:"Excelente",url:"https://thenextadbv.recruitee.com/"},
+  {name:"Aquablu",openings:1,type:"SaaS/Sustentabilidade",location:"Amsterdam",tier:1,fit:"Excelente",url:"https://aquablu.recruitee.com/"},
+  {name:"Insify",openings:2,type:"InsurTech",location:"Amsterdam",tier:1,fit:"Muito Bom",url:"https://careers.insify.nl/"},
+  {name:"Adyen",openings:1,type:"FinTech",location:"Amsterdam",tier:1,fit:"Muito Bom",url:"https://careers.adyen.com/"},
+  {name:"Catawiki",openings:1,type:"Marketplace",location:"Amsterdam",tier:2,fit:"Bom",url:"https://catawiki.careers/"},
+  {name:"Picnic",openings:2,type:"E-commerce (Grocery)",location:"Amsterdam",tier:2,fit:"Excelente",url:"https://jobs.picnic.app/"},
+  {name:"DEPT",openings:3,type:"Agencia Digital",location:"Amsterdam",tier:3,fit:"Muito Bom",url:"https://www.deptagency.com/careers/"},
+  {name:"Wolters Kluwer",openings:1,type:"B2B Enterprise",location:"Alphen aan den Rijn",tier:4,fit:"Muito Bom",url:"https://careers.wolterskluwer.com/"},
+  {name:"JDE Peet's",openings:1,type:"FMCG/Cafe",location:"Utrecht",tier:4,fit:"Bom",url:"https://careers-nl.jdepeets.com/"}
+];
+
+// ===================== STATE =====================
+let allJobs = [...CONFIRMED_JOBS];
+let currentTab = 'top';
+
+function saveState() {
+    // State is kept in memory only (no localStorage)
+}
+
+// ===================== RENDER =====================
+function calculateMatchScore(jobSkills) {
+    const matched = jobSkills.filter(s => ROBERTA_SKILLS.some(rs => rs.toLowerCase() === s.toLowerCase())).length;
+    return Math.round((matched / Math.max(jobSkills.length, 1)) * 100);
+}
+
+function getStatusLabel(status) {
+    const map = { new: 'Nova', applied: 'Candidatura Enviada', interview: 'Entrevista', offer: 'Proposta' };
+    return map[status] || status;
+}
+
+function getTierBadge(tier) {
+    const tiers = {1:"Tier 1 - B2B SaaS", 2:"Tier 2 - E-commerce", 3:"Tier 3 - Agencia", 4:"Tier 4 - Corporacao"};
+    return tiers[tier] || "";
+}
+
+function getTierClass(tier) {
+    return `tier-${tier}`;
+}
+
+function renderJobCard(job, realIdx) {
+    const matchedSkills = job.skills.filter(s => ROBERTA_SKILLS.some(rs => rs.toLowerCase() === s.toLowerCase()));
+    const card = document.createElement('div');
+    card.className = `job-card ${job.status}`;
+    card.innerHTML = `
+        <div class="source-badge">Welcome to NL</div>
+        <div class="job-header">
+            <div>
+                <div class="job-company">${job.company}</div>
+                <div class="job-title">${job.title}</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <span class="status-badge status-${job.status}">${getStatusLabel(job.status)}</span>
+                <span style="font-size:0.8rem;font-weight:700;color:${job.matchScore >= 85 ? 'var(--success)' : job.matchScore >= 70 ? 'var(--warning)' : 'var(--gray-500)'}">${job.matchScore}%</span>
+            </div>
+        </div>
+        <div style="margin-bottom:8px;">
+            <span class="tier-badge ${getTierClass(job.tier)}">${getTierBadge(job.tier)}</span>
+        </div>
+        <div class="job-meta">
+            <span>📍 ${job.location}</span>
+            <span>💼 ${job.type}</span>
+        </div>
+        <div class="job-desc">${job.description}</div>
+        <div class="job-tags">
+            ${job.skills.map(s => `<span class="tag ${matchedSkills.includes(s) ? 'match' : ''}">${s}</span>`).join('')}
+        </div>
+        <div class="job-actions">
+            <a href="${job.url}" target="_blank" class="btn-sm primary">Ver Vaga</a>
+            <button class="btn-sm" onclick="cycleStatus(${realIdx})">Atualizar Status</button>
+            <button class="btn-sm" onclick="editJob(${realIdx})">Editar Notas</button>
+        </div>
+        ${job.notes ? `<div style="margin-top:8px;padding:8px 12px;background:var(--gray-50);border-radius:6px;font-size:0.8rem;color:var(--gray-500);">📝 ${job.notes}</div>` : ''}
+    `;
+    return card;
+}
+
+function renderCompanyCard(company) {
+    const tierClass = `tier${company.tier}`;
+    const card = document.createElement('div');
+    card.className = 'company-card';
+    card.innerHTML = `
+        <div class="company-name">${company.name}</div>
+        <div class="company-badges">
+            <span class="company-badge ${tierClass}">${getTierBadge(company.tier)}</span>
+        </div>
+        <div class="company-info">📍 ${company.location}</div>
+        <div class="company-info">💼 ${company.type}</div>
+        <div class="company-fit"><strong>Fit:</strong> ${company.fit}</div>
+        <div class="company-info"><strong>${company.openings}</strong> vaga(s) aberta(s)</div>
+        <a href="${company.url}" target="_blank" class="btn-sm primary company-btn">Ver Vagas</a>
+    `;
+    return card;
+}
+
+function filterJobs() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const tier = document.getElementById('filterTier').value;
+    const status = document.getElementById('filterStatus').value;
+
+    let filtered = allJobs.filter(j => {
+        const matchSearch = !search || j.title.toLowerCase().includes(search) || j.company.toLowerCase().includes(search) || j.skills.some(s => s.toLowerCase().includes(search));
+        const matchTier = !tier || j.tier.toString() === tier;
+        const matchStatus = !status || j.status === status;
+        return matchSearch && matchTier && matchStatus && j.matchScore >= 80;
+    });
+
+    const container = document.getElementById('topJobList');
+    container.innerHTML = '';
+    const sorted = [...filtered].sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+    document.getElementById('topJobCount').textContent = sorted.length;
+    sorted.forEach(job => {
+        const realIdx = allJobs.indexOf(job);
+        container.appendChild(renderJobCard(job, realIdx));
+    });
+}
+
+function filterJobsAll() {
+    const search = document.getElementById('searchInput2').value.toLowerCase();
+    const city = document.getElementById('filterCity').value;
+    const tier = document.getElementById('filterTier2').value;
+
+    let filtered = allJobs.filter(j => {
+        const matchSearch = !search || j.title.toLowerCase().includes(search) || j.company.toLowerCase().includes(search) || j.skills.some(s => s.toLowerCase().includes(search));
+        const matchCity = !city || j.location.includes(city);
+        const matchTier = !tier || j.tier.toString() === tier;
+        return matchSearch && matchCity && matchTier;
+    });
+
+    const container = document.getElementById('allJobList');
+    container.innerHTML = '';
+    const sorted = [...filtered].sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+    document.getElementById('allJobCount').textContent = sorted.length;
+    sorted.forEach(job => {
+        const realIdx = allJobs.indexOf(job);
+        container.appendChild(renderJobCard(job, realIdx));
+    });
+
+    // Update stats
+    document.getElementById('tierDist1').textContent = allJobs.filter(j => j.tier === 1).length;
+    document.getElementById('tierDist2').textContent = allJobs.filter(j => j.tier === 2).length;
+    document.getElementById('tierDist3').textContent = allJobs.filter(j => j.tier === 3).length;
+    document.getElementById('tierDist4').textContent = allJobs.filter(j => j.tier === 4).length;
+
+    const cities = {};
+    allJobs.forEach(j => {
+        const cityMatch = j.location.split(',')[0];
+        cities[cityMatch] = (cities[cityMatch] || 0) + 1;
+    });
+    document.getElementById('cityAmsterdam').textContent = cities['Amsterdam'] || 0;
+    document.getElementById('cityUtrecht').textContent = cities['Utrecht'] || 0;
+    document.getElementById('cityRotterdam').textContent = cities['Rotterdam'] || 0;
+    document.getElementById('cityOther').textContent = (allJobs.length - (cities['Amsterdam'] || 0) - (cities['Utrecht'] || 0) - (cities['Rotterdam'] || 0));
+}
+
+function renderCompanies() {
+    const container = document.getElementById('companyList');
+    container.innerHTML = '';
+    const sorted = [...COMPANIES].sort((a, b) => b.tier - a.tier);
+    document.getElementById('companyCount').textContent = COMPANIES.length;
+    document.getElementById('compTotal').textContent = COMPANIES.length;
+    document.getElementById('compVagas').textContent = COMPANIES.reduce((sum, c) => sum + c.openings, 0);
+    sorted.forEach(company => {
+        container.appendChild(renderCompanyCard(company));
+    });
+}
+
+function renderAppliedJobs() {
+    const applied = allJobs.filter(j => ['applied', 'interview', 'offer'].includes(j.status));
+    const container = document.getElementById('appliedJobList');
+    const placeholder = container.parentElement;
+
+    if (applied.length > 0) {
+        placeholder.querySelector('div:first-child').style.display = 'none';
+        placeholder.querySelector('div:nth-child(2)').style.display = 'none';
+        placeholder.querySelector('div:nth-child(3)').style.display = 'none';
+        placeholder.style.textAlign = 'left';
+        placeholder.style.padding = '0';
+    }
+
+    container.innerHTML = '';
+    document.getElementById('appliedCount').textContent = applied.length;
+
+    applied.sort((a, b) => {
+        const order = { offer: 0, interview: 1, applied: 2 };
+        return (order[a.status] || 3) - (order[b.status] || 3);
+    }).forEach(job => {
+        const realIdx = allJobs.indexOf(job);
+        container.appendChild(renderJobCard(job, realIdx));
+    });
+}
+
+function updateKPIs() {
+    document.getElementById('kpiTotal').textContent = allJobs.length;
+    document.getElementById('kpiTier1').textContent = allJobs.filter(j => j.tier === 1).length;
+    document.getElementById('kpiTier2').textContent = allJobs.filter(j => j.tier === 2).length;
+    document.getElementById('kpiCompanies').textContent = COMPANIES.length;
+    const avgMatch = allJobs.length > 0 ? Math.round(allJobs.reduce((s, j) => s + (j.matchScore || 0), 0) / allJobs.length) : 0;
+    document.getElementById('kpiMatch').textContent = avgMatch + '%';
+}
+
+function renderAll() {
+    filterJobs();
+    renderCompanies();
+    renderAppliedJobs();
+    updateKPIs();
+    document.getElementById('allCount').textContent = allJobs.length;
+    document.getElementById('topCount').textContent = allJobs.filter(j => j.matchScore >= 80).length;
+    document.getElementById('compCount').textContent = COMPANIES.length;
+}
+
+// ===================== TABS =====================
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+    const tabs = {
+        top: [0, 'tab-top'],
+        all: [1, 'tab-all'],
+        companies: [2, 'tab-companies'],
+        applied: [3, 'tab-applied']
+    };
+
+    if (tabs[tab]) {
+        document.querySelectorAll('.tab-btn')[tabs[tab][0]].classList.add('active');
+        document.getElementById(tabs[tab][1]).classList.add('active');
+    }
+}
+
+// ===================== ACTIONS =====================
+function cycleStatus(idx) {
+    const order = ['new', 'applied', 'interview', 'offer'];
+    const curr = order.indexOf(allJobs[idx].status);
+    allJobs[idx].status = order[(curr + 1) % order.length];
+    saveState();
+    renderAll();
+}
+
+function editJob(idx) {
+    const job = allJobs[idx];
+    document.getElementById('editIndex').value = idx;
+    document.getElementById('mStatus').value = job.status;
+    document.getElementById('mNotes').value = job.notes || '';
+    document.getElementById('addModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('addModal').classList.remove('active');
+}
+
+function saveJob() {
+    const idx = parseInt(document.getElementById('editIndex').value);
+    if (idx >= 0) {
+        allJobs[idx].status = document.getElementById('mStatus').value;
+        allJobs[idx].notes = document.getElementById('mNotes').value;
+        saveState();
+        closeModal();
+        renderAll();
+    }
+}
+
+// ===================== SEARCH =====================
+function refreshSearch() {
+    const btn = document.querySelector('.btn-refresh');
+    btn.textContent = 'Atualizando...';
+    btn.disabled = true;
+
+    setTimeout(() => {
+        document.querySelector('.btn-refresh').textContent = 'Atualizar dados';
+        btn.disabled = false;
+    }, 1500);
+}
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => { renderAll(); });
+document.getElementById('addModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+</script>
+</body>
+</html>
